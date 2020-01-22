@@ -10,6 +10,7 @@ from im2mesh import config, data
 from im2mesh.checkpoints import CheckpointIO
 from collections import defaultdict
 import shutil
+import pdb
 
 
 # Arguments
@@ -86,6 +87,8 @@ for i in range(len(vis_loader)):
     category_id = model_dict.get('category', 'n/a')
     category_name = val_dataset.metadata[category_id].get('name', 'n/a')
     category_name = category_name.split(',')[0]
+    if category_name == 'n/a':
+        category_name = category_id
 
     c_it = model_counter[category_id]
     if c_it < vis_n_outputs:
