@@ -15,7 +15,7 @@ class BaseTrainer(object):
         '''
         eval_list = defaultdict(list)
 
-        for data in tqdm(val_loader):
+        for data in val_loader:
             eval_step_dict = self.eval_step(data)
 
             for k, v in eval_step_dict.items():
