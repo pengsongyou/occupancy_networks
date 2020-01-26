@@ -130,11 +130,12 @@ class PointsField(Field):
             provided
 
     '''
-    def __init__(self, file_name, transform=None, with_transforms=False, unpackbits=False):
+    def __init__(self, file_name, transform=None, with_transforms=False, unpackbits=False, multi_files=None):
         self.file_name = file_name
         self.transform = transform
         self.with_transforms = with_transforms
         self.unpackbits = unpackbits
+        self.multi_files = multi_files
 
     def load(self, model_path, idx, category):
         ''' Loads the data point.
@@ -144,7 +145,11 @@ class PointsField(Field):
             idx (int): ID of data point
             category (int): index of category
         '''
-        file_path = os.path.join(model_path, self.file_name)
+        if self.multi_files is None:
+            file_path = os.path.join(model_path, self.file_name)
+        else:
+            num = np.random.randint(self.multi_files)
+            file_path = os.path.join(model_path, self.file_name, '%s_%02d.npz' % (self.file_name, num))
 
         points_dict = np.load(file_path)
         points = points_dict['points']
@@ -229,10 +234,11 @@ class PointCloudField(Field):
         with_transforms (bool): whether scaling and rotation dat should be
             provided
     '''
-    def __init__(self, file_name, transform=None, with_transforms=False):
+    def __init__(self, file_name, transform=None, with_transforms=False, multi_files=None):
         self.file_name = file_name
         self.transform = transform
         self.with_transforms = with_transforms
+        self.multi_files = multi_files
 
     def load(self, model_path, idx, category):
         ''' Loads the data point.
@@ -242,7 +248,12 @@ class PointCloudField(Field):
             idx (int): ID of data point
             category (int): index of category
         '''
-        file_path = os.path.join(model_path, self.file_name)
+        if self.multi_files is None:
+            file_path = os.path.join(model_path, self.file_name)
+        else:
+            num = np.random.randint(self.multi_files)
+            file_path = os.path.join(model_path, self.file_name, '%s_%02d.npz' % (self.file_name, num))
+
 
         pointcloud_dict = np.load(file_path)
 

@@ -1,0 +1,42 @@
+method: onet
+data:
+  classes: ['rooms_05']
+  input_type: pointcloud
+  path: data/RoomDataset3
+  pointcloud_n: 3000
+  pointcloud_noise: 0.005
+  points_subsample: 2048 
+  points_file: points_iou
+  points_iou_file: points_iou
+  pointcloud_file: pointcloud
+  multi_files: 10
+  voxels_file: null
+  padding: 0.1
+model:
+  encoder_latent: null
+  decoder: cbatchnorm
+  encoder: pointnet_resnet
+  encoder_kwargs:
+    hidden_dim: 512
+  c_dim: 512
+  z_dim: 0
+training:
+  out_dir:  out/pointcloud/room_05_n3000
+  batch_size: 24
+  model_selection_metric: iou
+  model_selection_mode: maximize
+  print_every: 100
+  visualize_every: 500
+  validate_every: 10000
+  checkpoint_every: 10000
+  backup_every: 10000
+test:
+  threshold: 0.2
+  eval_mesh: true
+  eval_pointcloud: false
+generation:
+  vis_n_outputs: 5
+  batch_size: 100000
+  refine: false
+  n_x: 128
+  n_z: 1

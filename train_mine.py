@@ -58,12 +58,12 @@ train_dataset = config.get_dataset('train', cfg)
 val_dataset = config.get_dataset('val', cfg, return_idx=True)
 
 train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batch_size, num_workers=4, shuffle=True,
+    train_dataset, batch_size=batch_size, num_workers=12, shuffle=True,
     collate_fn=data.collate_remove_none,
     worker_init_fn=data.worker_init_fn)
 
 val_loader = torch.utils.data.DataLoader(
-    val_dataset, batch_size=1, num_workers=4, shuffle=False,
+    val_dataset, batch_size=1, num_workers=12, shuffle=False,
     collate_fn=data.collate_remove_none,
     worker_init_fn=data.worker_init_fn)
 
@@ -157,8 +157,8 @@ while True:
 
         # Print output
         if print_every > 0 and (it % print_every) == 0:
-            print('[Epoch %02d] it=%03d, loss=%.4f'
-                  % (epoch_it, it, loss))
+            print('[Epoch %02d] it=%03d, loss=%.4f, time: %.2f'
+                  % (epoch_it, it, loss, time.time() - t0))
 
         # Visualize output
         if visualize_every > 0 and (it % visualize_every) == 0:

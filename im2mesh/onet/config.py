@@ -136,6 +136,7 @@ def get_data_fields(mode, cfg):
         cfg['data']['points_file'], points_transform,
         with_transforms=with_transforms,
         unpackbits=cfg['data']['points_unpackbits'],
+        multi_files=cfg['data']['multi_files']
     )
 
     if mode in ('val', 'test'):
@@ -146,6 +147,7 @@ def get_data_fields(mode, cfg):
                 points_iou_file,
                 with_transforms=with_transforms,
                 unpackbits=cfg['data']['points_unpackbits'],
+                multi_files=cfg['data']['multi_files']
             )
         if voxels_file is not None:
             fields['voxels'] = data.VoxelsField(voxels_file)

@@ -216,7 +216,8 @@ def get_inputs_field(mode, cfg):
         with_transforms = cfg['data']['with_transforms']
         inputs_field = data.PointCloudField(
             cfg['data']['pointcloud_file'], transform,
-            with_transforms=with_transforms
+            with_transforms=with_transforms,
+            multi_files= cfg['data']['multi_files']
         )
     elif input_type == 'voxels':
         inputs_field = data.VoxelsField(
