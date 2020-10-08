@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from im2mesh.layers import ResnetBlockFC
+from im2mesh.common import positional_encoding
 
 
 def maxpool(x, dim=-1, keepdim=False):
@@ -67,7 +68,7 @@ class ResnetPointnet(nn.Module):
         hidden_dim (int): hidden dimension of the network
     '''
 
-    def __init__(self, c_dim=128, dim=3, hidden_dim=128):
+    def __init__(self, c_dim=128, dim=3, hidden_dim=128, pos_encoding=None):
         super().__init__()
         self.c_dim = c_dim
 
@@ -82,10 +83,17 @@ class ResnetPointnet(nn.Module):
         self.actvn = nn.ReLU()
         self.pool = maxpool
 
+        if pos_encoding == 'sin_cos':
+            self.fc_pos = nn.Linear(60, 2*hidden_dim)
+        else:
+            self.fc_pos = nn.Linear(dim, 2*hidden_dim)
+        self.pe = positional_encoding(pos_encoding)
+
     def forward(self, p):
         batch_size, T, D = p.size()
 
         # output size: B x T X F
+        p = self.pe(p)
         net = self.fc_pos(p)
         net = self.block_0(net)
         pooled = self.pool(net, dim=1, keepdim=True).expand(net.size())

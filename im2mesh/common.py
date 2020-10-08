@@ -2,7 +2,7 @@
 import torch
 from im2mesh.utils.libkdtree import KDTree
 import numpy as np
-
+import math
 
 def compute_iou(occ1, occ2):
     ''' Computes the Intersection over Union (IoU) value for two sets of
@@ -315,3 +315,41 @@ def fix_K_camera(K, img_size=137):
     ], device=K.device, dtype=K.dtype)
     K_new = scale_mat.view(1, 3, 3) @ K
     return K_new
+
+class positional_encoding(object):
+    ''' Positional Encoding (presented in NeRF)
+
+    Args:
+        basis_function (str): basis function
+    '''
+    def __init__(self, basis_function='sin_cos', local=False, freq=10):
+        super().__init__()
+        self.func = basis_function
+        self.local = local
+
+        L = freq
+        freq_bands = 2.**(np.linspace(0, L-1, L))
+        self.freq_bands = freq_bands * math.pi
+
+    def __call__(self, p):
+        if self.func == 'sin_cos':
+            out = []
+            if self.local: # already within the range of [0, 1]
+                p = 2.0 * p - 1.0 # chagne to the range [-1, 1]
+
+            for freq in self.freq_bands:
+                out.append(torch.sin(freq * p))
+                out.append(torch.cos(freq * p))
+            if p.shape[1] == 3:
+                p = torch.cat(out, dim=1)
+            elif p.shape[2] == 3:
+                p = torch.cat(out, dim=2)
+        return p
+
+class Sine(torch.nn.Module):
+    def __init(self):
+        super().__init__()
+
+    def forward(self, input):
+        # See paper sec. 3.2, final paragraph, and supplement Sec. 1.5 for discussion of factor 30
+        return torch.sin(30 * input)

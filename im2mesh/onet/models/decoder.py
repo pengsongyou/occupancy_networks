@@ -6,6 +6,7 @@ from im2mesh.layers import (
     CBatchNorm1d, CBatchNorm1d_legacy,
     ResnetBlockConv1d
 )
+from im2mesh.common import positional_encoding
 
 
 class Decoder(nn.Module):
@@ -87,7 +88,7 @@ class DecoderCBatchNorm(nn.Module):
     '''
 
     def __init__(self, dim=3, z_dim=128, c_dim=128,
-                 hidden_size=256, leaky=False, legacy=False):
+                 hidden_size=256, leaky=False, legacy=False, pos_encoding=None):
         super().__init__()
         self.z_dim = z_dim
         if not z_dim == 0:
@@ -112,9 +113,17 @@ class DecoderCBatchNorm(nn.Module):
         else:
             self.actvn = lambda x: F.leaky_relu(x, 0.2)
 
+        if pos_encoding == 'sin_cos':
+            self.fc_p = nn.Conv1d(60, hidden_size, 1)
+        else:
+            self.fc_p = nn.Conv1d(dim, hidden_size, 1)
+        self.pe = positional_encoding(pos_encoding)
+
     def forward(self, p, z, c, **kwargs):
         p = p.transpose(1, 2)
         batch_size, D, T = p.size()
+
+        p = self.pe(p)
         net = self.fc_p(p)
 
         if self.z_dim != 0:
